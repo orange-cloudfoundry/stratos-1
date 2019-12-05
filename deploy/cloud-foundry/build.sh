@@ -1,5 +1,13 @@
 #!/bin/bash
 
+if [[ -n "${STRATOS_BP_DEBUG}" ]]; then
+    echo "Turning on bash traces as instructed in STRATOS_BP_DEBUG=${STRATOS_BP_DEBUG}"
+    echo "Undefine the variable to turn debugging off"
+    set -x
+    NPM_VERBOSE_OPTION=${NPM_VERBOSE_OPTION:-"--verbose"} #Enabler callers to predefine the variable to set different npm flag
+fi
+NPM_VERBOSE_OPTION=${NPM_VERBOSE_OPTION:-""} #No npm verbose mode by default
+
 set -e
 
 BUILD_DIR=$1
@@ -38,11 +46,11 @@ if [ -f "stratos-frontend-prebuild.zip" ]; then
 else
   # Build front-end
   log "Fetching front-end dependencies" $CYAN
-  npm install
-  npm run customize
+  npm ${NPM_VERBOSE_OPTION} install
+  npm ${NPM_VERBOSE_OPTION} run customize
 
   log "Building front-end" $CYAN
-  npm run build-cf
+  npm ${NPM_VERBOSE_OPTION} run build-cf
 fi
 
 # If the repo has a vendor folder  move that to the cache to be used, signal to use it as is
